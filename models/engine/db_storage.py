@@ -6,6 +6,9 @@ from sqlalchemy.orm import sessionmaker, scoped_session
 from models.base_model import Base
 from models.state import State
 from models.city import City
+from models.place import Place
+from models.review import Review
+from models.amenity import Amenity
 
 class DBStorage:
     """Data storage engine"""
@@ -22,7 +25,7 @@ class DBStorage:
         db_name = os.environ.get('HBNB_MYSQL_DB', 'hbnb_dev_db')
         env = os.environ.get('HBNB_ENV', 'production')
 
-	engine_str = f'mysql+mysqldb://{dd_user}:{db_password}@{db_host}/{db_name}'
+	engine_str = f'mysql+mysqldb://{db_user}:{db_password}@{db_host}/{db_name}'
         self.__engine = create_engine(engine_str, pool_pre_ping=True)
 
         if env == 'test':
@@ -60,7 +63,7 @@ class DBStorage:
 
         self.init_session()
         
-        State.cities = relationship("City", cascade="all, delete-orphan", backref="stste")
+        State.cities = relationship("City", cascade="all, delete-orphan", backref="state")
 
     def all(self, cls=None):
         """Query all objects based on the class name or all objects if cls=None."""
