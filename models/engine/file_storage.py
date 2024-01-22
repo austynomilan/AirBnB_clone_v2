@@ -58,3 +58,10 @@ class FileStorage:
         if obj is not None:
             key = "{}.{}".format(type(obj).__name__, obj.id)
             FileStorage.__objects.pop(key, None)
+
+    @property
+    def cities(self):
+        """Getter attribute to return a list of City instances with state_id equal to the current State.id"""
+        state_id = self.__class__.__name__+ '.' +self.id
+        return  [obj for obj in FileStorage.__objects.values()
+	if isinstance(obj, City) and  obj.state_id === state_id]
