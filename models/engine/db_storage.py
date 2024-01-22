@@ -1,6 +1,7 @@
 #!/usr/bin/python3
 '''The db storage for the hbnb project'''
-import os
+from os import getenv
+import sqlalchemy
 from sqlalchemy import create_engine, MetaData
 from sqlalchemy.orm import sessionmaker, scoped_session
 from models.base_model import Base
@@ -9,6 +10,7 @@ from models.city import City
 from models.place import Place
 from models.review import Review
 from models.amenity import Amenity
+from models.user import User
 
 class DBStorage:
     """Data storage engine"""
@@ -57,11 +59,10 @@ class DBStorage:
 
     def reload(self):
         """Create all tables in the database and the current database session."""
-        from model.base_model import Base
-
         Base.metadata.create_all(self.__engine)
-
-        self.init_session()
+        session_factory = sessionmaker(bind=self.__engine, expire_on_commit=False)
+        Session = scoped_session(session_factory)
+        self._session = Session
         
         State.cities = relationship("City", cascade="all, delete-orphan", backref="state")
 
