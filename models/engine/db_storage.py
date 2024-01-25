@@ -1,92 +1,75 @@
 #!/usr/bin/python3
-'''The db storage for the hbnb project'''
+
+"""
+A module that defines extensively the database storage for this project
+"""
 from os import getenv
-import sqlalchemy
-from sqlalchemy import create_engine, MetaData
-from sqlalchemy.orm import sessionmaker, scoped_session
 from models.base_model import Base
-from models.state import State
+from models.user import User
 from models.city import City
+from models.state import State
 from models.place import Place
 from models.review import Review
 from models.amenity import Amenity
-from models.user import User
+from sqlalchemy import create_engine
+from sqlalchemy.orm import sessionmaker
+from sqlalchemy.orm import scoped_session
+
 
 class DBStorage:
-    """Data storage engine"""
+    """Database utilities definition"""
     __engine = None
     __session = None
 
     def __init__(self):
+        """Instantiation method"""
         self.__engine = create_engine('mysql+mysqldb://{}:{}@{}/{}'.format(
-            getenv('HBNB_MYSQL_USER'),
-            getenv('HBNB_MYSQL_PWD'),
-            getenv('HBNB_MYSQL_HOST'),
-            getenv('HBNB_MYSQL_DB'),
+            getenv('HBNB_MYSQL_USER'), getenv('HBNB_MYSQL_PWD'),
+            getenv('HBNB_MYSQL_HOST'), getenv('HBNB_MYSQL_DB')
+            ),
             pool_pre_ping=True
-	))
-   
-
+        )
         if getenv('HBNB_ENV') == 'test':
-            Base.metadata.drop_all(self._engine)
+            Base.metadata.drop_all(self.__engine)
+
+    def all(self, cls=None):
+        """Makes a query to the database
+        if cls is given, query for cls only else query for all"""
+        objs = []
+        if cls is None:
+            Classes = [User, City, State, Place, Review, Amenity]
+            try:
+                for Class in Classes:
+                    objs = objs + self.__session.query(Class).all()
+            except Exception:
+                pass
+        else:
+            Class = eval(cls) if type(cls) == str else cls
+            objs = self.__session.query(Class).all()
+        return {'{}.{}'.format(type(o).__name__, o.id): o for o in objs}
 
     def new(self, obj):
-        """Add the object to the current database session."""
-        if obj:
-            self.__session.add(obj)
+        """Adds the object to the current database session"""
+        self.__session.add(obj)
 
     def save(self):
-        """Commit all the changes of the current database session."""
+        """Commits all changes of the current database session"""
         self.__session.commit()
 
     def delete(self, obj=None):
-        """Delete obj from the current database session if not None."""
-        if obj:
+        """Deletes from the current database session"""
+        if obj is not None:
             self.__session.delete(obj)
 
     def reload(self):
-        """Create all tables in the database and the current database session."""
+        """Create all tables in the database"""
         Base.metadata.create_all(self.__engine)
-        session_factory = sessionmaker(bind=self.__engine, expire_on_commit=False)
+        session_factory = sessionmaker(
+            bind=self.__engine, expire_on_commit=False
+        )
         Session = scoped_session(session_factory)
-        self._session = Session()
-        
-        State.cities = relationship("City", cascade="all, delete-orphan", backref="state")
+        self.__session = Session()
 
-    def all(self, cls=None):
-        """Query all objects based on the class name or all objects if cls=None."""
-        classes = {
-            "City": City,
-            "State": State,
-            "User": User,
-            "Place": Place,
-            "Review": Review,
-            "Amenity": Amenity
-        }
-       
-        result = {}
-        query_rows = []
-
-        if cls:
-            """Query for all objects belonging to cls"""
-            if type(cls) is str:
-                cls = eval(cls)
-            query_rows = self.__session.query(cls)
-            for obj in query_rows:
-                key = '{}.{}'.format(type(obj).__name__, obj.id)
-                result[key] = obj
-            return result
-
-        else:
-            """Query for all types of object"""
-            for name, value in classes.items():
-                query_rows = self.__session.query(value)
-                for obj in query_rows:
-                    key = '{}.{}'.format(name, obj.id)
-                    result[key] = obj
-            return result
-	    
     def close(self):
-        """Because SQLAlchemy doesn't reload his `Session`
-        when it's time to insert new data, we force it to!"""
+        """Dispose of the current Session, if present."""
         self.__session.close()
