@@ -20,6 +20,14 @@ class State(BaseModel, Base):
                 cascade="all,  delete-orphan")
     else:
         name = ""
-    """@property
+
+    @property
     def cities(self):
-        Getter attribute for FileStorage"""
+        """Getter attribute for FileStorage"""
+        from models import storage
+        from models import City
+        lists = []
+        for val in storage.all(City).values():
+            if self.id == val.state_id:
+                lists.append(val)
+        return lists

@@ -3,7 +3,7 @@
 import cmd
 import sys
 from models.base_model import BaseModel
-from models.__init__ import Storage
+from models.__init__ import storage
 from models.user import User
 from models.place import Place
 from models.state import State
@@ -150,9 +150,7 @@ class HBNBCommand(cmd.Cmd):
             new_instance.save()
             print(new_instance.id)
         except Exception as e:
-            import traceback
             print("Error creating object {}".format(e))
-            traceback.print_exc()
 
     def help_create(self):
         """ Help information for the create method """
@@ -235,11 +233,11 @@ class HBNBCommand(cmd.Cmd):
             if cls not in HBNBCommand.classes:
                 print("** class doesn't exist **")
                 return
-            for k, v in Storage.all(cls).items():
+            for k, v in storage.all(cls).items():
                 if k.split('.')[0] == args:
                     print_list.append(str(v))
         else:
-            obj = Storage.all()
+            obj = storage.all()
             for k, v in obj.items():
                 print_list.append(str(v))
         print(print_list)

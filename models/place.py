@@ -61,10 +61,10 @@ class Place(BaseModel, Base):
         @property
         def reviews(self):
             """ getter attribute for reviews """
-            from models import Storage
+            from models import storage
             if self.id is not None:
                 lists = []
-                for val in Storage.all(Review).values():
+                for val in storage.all(Review).values():
                     if val.place_id == self.id:
                         lists.append(val)
                 return lists
@@ -72,10 +72,10 @@ class Place(BaseModel, Base):
         @property
         def amenities(self):
             """ getter attribute for amenities """
-            from models import Storage
+            from models import storage
             from models import Amenity
             lists = []
-            for val in Storage.all(Amenity).values():
+            for val in storage.all(Amenity).values():
                 if val.id == self.amenity_ids:
                     lists.append(val)
             return lists

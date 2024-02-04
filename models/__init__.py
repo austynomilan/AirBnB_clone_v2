@@ -1,5 +1,4 @@
-#!/usr/bin/python3
-"""Changing storage type using env variable"""
+
 from models.engine.db_storage import DBStorage
 from models.engine.file_storage import FileStorage
 from models.base_model import BaseModel
@@ -14,12 +13,12 @@ import os
 storage_type = os.environ.get('HBNB_TYPE_STORAGE')
 
 if storage_type == 'db':
-    Storage = DBStorage()
-    Storage.reload()
+    storage = DBStorage()
+    storage.reload()
 else:
-    Storage = FileStorage()
-    Storage.reload()
+    storage = FileStorage()
+    storage.reload()
 
 __all__ = ['BaseModel', 'User',
            'Place', 'City', 'State',
-           'Amenity', 'Review', 'Storage']
+           'Amenity', 'Review', 'storage']

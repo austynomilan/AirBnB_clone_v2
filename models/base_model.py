@@ -18,7 +18,7 @@ class BaseModel:
     def __init__(self, *args, **kwargs):
         """Instatntiates a new model"""
         if not kwargs:
-            from models import Storage
+            from models import storage
             self.id = str(uuid.uuid4())
             self.created_at = datetime.now()
             self.updated_at = datetime.now()
@@ -49,10 +49,10 @@ class BaseModel:
 
     def save(self):
         """Updates updated_at with current time when instance is changed"""
-        from models import Storage
+        from models import storage
         self.updated_at = datetime.now()
-        Storage.new(self)
-        Storage.save()
+        storage.new(self)
+        storage.save()
 
     def to_dict(self):
         """Convert instance into dict format"""
@@ -69,5 +69,5 @@ class BaseModel:
 
     def delete(self):
         """Delete current instance from the storage"""
-        from models import Storage
-        Storage.delete(self)
+        from models import storage
+        storage.delete(self)
