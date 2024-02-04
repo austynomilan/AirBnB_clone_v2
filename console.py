@@ -1,4 +1,3 @@
-
 #!/usr/bin/python3
 """ Console Module """
 import cmd
@@ -49,7 +48,7 @@ class HBNBCommand(cmd.Cmd):
             return line
 
         try:  # parse line left to right
-            pline = line[:]  # parsed line
+            pline = line[:].strip()  # parsed line
 
             # isolate <class name>
             _cls = pline[:pline.find('.')]
@@ -71,7 +70,7 @@ class HBNBCommand(cmd.Cmd):
                 # empty quotes register as empty _id when replaced
 
                 # if arguments exist beyond _id
-                pline = pline[2].strip()  # pline is now str
+                pline = pline[2].strip() if len(pline) > 2 else '' # pline is now str
                 if pline:
                     # check for *args or **kwargs
                     if pline[0] == '{' and pline[-1] == '}'\
@@ -137,8 +136,8 @@ class HBNBCommand(cmd.Cmd):
 
     def help_create(self):
         """ Help information for the create method """
-        print("Creates a class of any type")
-        print("[Usage]: create <className>\n")
+        print("Creates a class instance with specified attribute-value pairs")
+       	print("[Usage]: create <className> <attribute1=value1> <attribute2=value2> ...\n")
 
     def do_show(self, args):
         """ Method to show an individual object """
@@ -280,7 +279,7 @@ class HBNBCommand(cmd.Cmd):
         else:  # isolate args
             args = args[2]
             if args and args[0] == '\"':  # check for quoted arg
-                second_quote = args.find('\"', 1)
+                att_name = args[1:second_quote].strip() 
                 att_name = args[1:second_quote]
                 args = args[second_quote + 1:]
 
