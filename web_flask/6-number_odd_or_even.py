@@ -7,15 +7,18 @@ from flask import Flask, render_template
 
 app = Flask(__name__)
 
+
 @app.route("/", strict_slashes=False)
 def hello_world():
     """display “Hello HBNB!”"""
     return "Hello HBNB!"
 
+
 @app.route("/hbnb", strict_slashes=False)
 def hbnb():
     """display “HBNB”"""
     return "HBNB"
+
 
 @app.route("/c/<text>", strict_slashes=False)
 def show_c(text):
@@ -25,6 +28,7 @@ def show_c(text):
     """
     new_text = text.replace('_', ' ')
     return "C {}".format(new_text)
+
 
 @app.route("/python/", strict_slashes=False)
 @app.route("/python/<text>", strict_slashes=False)
@@ -40,12 +44,14 @@ def show_python(text=None):
     else:
         return "Python is cool"
 
+
 @app.route("/number/<int:n>", strict_slashes=False)
 def show_number(n):
     """
     display “n is a number” only if n is an integer
     """
     return "{} is a number".format(n)
+
 
 @app.route("/number_template/<int:n>", strict_slashes=False)
 def number_template(n):
@@ -54,6 +60,7 @@ def number_template(n):
     H1 tag: “Number: n” inside the tag BODY
     """
     return render_template('5-number.html', n=n)
+
 
 @app.route("//number_odd_or_even/<int:n>", strict_slashes=False)
 def number_odd_even(n):
