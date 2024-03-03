@@ -12,7 +12,6 @@ import os
 env.hosts = ['34.232.65.90', '100.25.38.139']
 created_path = None
 
-
 def do_pack():
     """
         generates a .tgz archine from contents of web_static
@@ -21,7 +20,7 @@ def do_pack():
     file_name = "versions/web_static_{}.tgz".format(time)
     try:
         local("mkdir -p ./versions")
-        local("tar --create --verbose -z --file={} ./web_static my_index.html"
+        local("tar --create --verbose -z --file={} ./web_static"
               .format(file_name))
         return file_name
     except:
@@ -53,7 +52,6 @@ def do_deploy(archive_path):
         return True
     except:
         return False
-
 
 
 def deploy():
