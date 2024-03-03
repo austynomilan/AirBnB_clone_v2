@@ -21,7 +21,7 @@ def do_pack():
     file_name = "versions/web_static_{}.tgz".format(time)
     try:
         local("mkdir -p ./versions")
-        local("tar --create --verbose -z --file={} ./web_static"
+        local("tar --create --verbose -z --file={} ./web_static my_index.html"
               .format(file_name))
         return file_name
     except:
