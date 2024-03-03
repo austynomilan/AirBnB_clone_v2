@@ -5,50 +5,63 @@ the contents of the web_static folder of your
 AirBnB Clone repo, using the function do_pack
 """
 from fabric.api import *
+from fabric.operations import run, put, sudo, local
 from datetime import datetime
-from os.path import isdir
-from os.path import exists
-env.hosts = ['18.233.64.33', '18.204.10.26']
+import os
+
+env.hosts = ['34.232.65.90', '100.25.38.139']
+created_path = None
 
 
 def do_pack():
-    """ generates a .tgz archive from the contents of the web_static """
+    """
+        generates a .tgz archine from contents of web_static
+    """
+    time = datetime.utcnow().strftime('%Y%m%d%H%M%S')
+    file_name = "versions/web_static_{}.tgz".format(time)
     try:
-        current_time = datetime.now().strftime('%Y%m%d%H%M%S')
-        archive_name = "versions/web_static_{}.tgz".format(current_time)
-        if isdir("versions") is False:
-            local("mkdir versions")
-        local("tar -cvzf {} web_static".format(archive_name))
-        return archive_name
-    except Exception as e:
+        local("mkdir -p ./versions")
+        local("tar --create --verbose -z --file={} ./web_static"
+              .format(file_name))
+        return file_name
+    except:
         return None
 
 
 def do_deploy(archive_path):
-    """distributes an archive to your web servers"""
-    if exists(archive_path) is False:
+    """
+        using fabric to distribute archive
+    """
+    if os.path.isfile(archive_path) is False:
         return False
     try:
-        file_name = archive_path.split("/")[-1]
-        file_no_ext = file_name.split(".")[0]
-        path = "/data/web_static/releases/"
-        put(archive_path, '/tmp/')
-        run("mkdir -p {}{}/".format(path, file_no_ext))
-        run("tar -xzf /tmp/{} -C {}{}/".format(file_name, path, file_no_ext))
-        run("rm /tmp/{}".format(file_name))
-        run("mv {0}{1}/web_static/* {0}{1}/".format(path, file_no_ext))
-        run("rm -rf {}{}/web_static".format(path, file_no_ext))
+        archive = archive_path.split("/")[-1]
+        path = "/data/web_static/releases"
+        put("{}".format(archive_path), "/tmp/{}".format(archive))
+        folder = archive.split(".")
+        run("mkdir -p {}/{}/".format(path, folder[0]))
+        new_archive = '.'.join(folder)
+        run("tar -xzf /tmp/{} -C {}/{}/"
+            .format(new_archive, path, folder[0]))
+        run("rm /tmp/{}".format(archive))
+        run("mv {}/{}/web_static/* {}/{}/"
+            .format(path, folder[0], path, folder[0]))
+        run("rm -rf {}/{}/web_static".format(path, folder[0]))
         run("rm -rf /data/web_static/current")
-        run("ln -s {}{}/ /data/web_static/current".format(path, file_no_ext))
+        run("ln -sf {}/{} /data/web_static/current"
+            .format(path, folder[0]))
         return True
-    except Exception as e:
+    except:
         return False
 
 
 def deploy():
-    """creates and distributes an archive to your web servers"""
-    archive = do_pack()
-    if archive is None:
+    """
+        deploy function that creates/distributes an archive
+    """
+    global created_path
+    if created_path is None:
+        created_path = do_pack()
+    if created_path is None:
         return False
-    new_archive = do_deploy(archive)
-    return new_archive
+    return do_deploy(created_path)
