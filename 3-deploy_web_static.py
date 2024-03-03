@@ -54,16 +54,7 @@ def do_deploy(archive_path):
     except:
         return False
 
-def deploy_local():
-    """
-    Deploys the archive locally
-    """
-    archive_path = do_pack()
-    if archive_path:
-        local("cp {} C:\Users\user\Documents".format(archive_path))
-        print("Local deployment successful!")
-    else:
-        print("Error creating archive")
+
 
 def deploy():
     """
