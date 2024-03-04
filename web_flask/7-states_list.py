@@ -5,6 +5,12 @@ The application listens on 0.0.0.0, port 5000.
 Routes:
 /states_list: HTML page with a list of all State objects in DBStorage.
 """
+import sys
+import os
+
+clone_path = '/AirBnB_clone_v2'
+sys.path.append(clone_path)
+
 from flask import Flask, render_template
 from models import storage
 from models.state import State
